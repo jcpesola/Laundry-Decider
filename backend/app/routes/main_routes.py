@@ -1,15 +1,22 @@
+from flask import Blueprint, jsonify, request, current_app
+#I got this from Avi's code- what are these dependencies? any others that I need?
+
+main_bp = Blueprint('main', __name__)
+
+
 #API 1: Get laundry stores within a radius of the user's location
-@app.route('/read_laundry_store_price/<int:store_id>', methods=['GET'])
+@main_bp.route('/read_laundry_store_price', methods=['GET'])
 def read_laundry_store_prices(store_id):
     pass
 
 #API 2: Get pricing for a specific laundry store
+
+@main_bp.route('/read_laundry_store_price', methods=['GET'])
 def read_laundry_store_price(store_id):
      pass
 
 #API 3: Get list of laundry stores sorted by price
 
-
-
-if __name__ == "__main__":
-     app.run(debug=True, host='local_host', port=8080)
+@main_bp.route('/sort_laundry_stores_on_price', methods=['GET'])
+def sort_laundry_stores_on_price():
+     pass
