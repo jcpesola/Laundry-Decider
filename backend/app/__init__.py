@@ -1,5 +1,6 @@
 from flask import Flask
 from .database import db #import database setup
+from .routes import main_blueprint #Import the blueprint from the routes
 
 #create and configure flask app here
 def create_app():
@@ -14,6 +15,7 @@ def create_app():
 
     #Import and register Blueprints/routes
     #from .routes import main
-    #app.register_blueprint(main)
+
+    app.register_blueprint(main_blueprint)
 
     return app
