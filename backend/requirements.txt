@@ -42,3 +42,7 @@ traitlets==5.14.3
 virtualenv==20.25.0
 wcwidth==0.2.13
 Werkzeug==3.0.4
+
+
+Flask-SQLAlchemy==2.5.1
+SQLAlchemy==1.4.27

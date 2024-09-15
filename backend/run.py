@@ -3,14 +3,6 @@ from app import create_app
 app = create_app()
 
 if __name__ == "__main__":
-      app.run(debug=True, host='local_host', port=8080)
+      app.run(debug=True)
 
-# from flask import Flask
-
-# def create_app():
-#     app = Flask(__name__)
-
-#     #Import routes from the route module
-    
-
-#     return app
+#Entry point to run the app

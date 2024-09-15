@@ -1,1 +1,1 @@
-from .database import database_bp
+from .database import db
