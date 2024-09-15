@@ -13,9 +13,7 @@ def create_app():
     #Initialize SQLAlchemy in app
     db.init_app(app)
 
-    #Import and register Blueprints/routes
-    #from .routes import main
-
+    #Register Blueprints/routes
     app.register_blueprint(main_blueprint)
 
     return app
