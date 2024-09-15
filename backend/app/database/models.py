@@ -12,11 +12,11 @@ class LaundryStore(db.Model):
     free_delivery = db.Column(db.Boolean, default=False)
 
     #Relationships
-    # address = db.relationship('Address',)
-    # hours = db.relationship()
-    # wash_and_fold_price = db.relationship()
-    # dry_cleaning_price = db.relationship()
-    # reviews = db.relationship()
+    address = db.relationship('Address', backref = 'laundry_store', uselist = False) #One to one
+    hours = db.relationship('Hours', backref = 'laundry_store', uselist=False, lazy='joined') #One to One | Joined loading - loads same time as parent (laundry store)
+    wash_and_fold_price = db.relationship('WashAndFoldPrice', backref='laundry_store', uselist=False) #One to one
+    dry_cleaning_price = db.relationship('DryCleaningPrice', backref='laundry_store', uselist=False) #One to one
+    reviews = db.relationship('Reviews', backref='laundry_store', lazy='dynamic') #One to many | lazy dynamic - returns query object rather then all results at once
 
 #Address Model
 class Address(db.Model):
