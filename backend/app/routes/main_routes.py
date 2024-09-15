@@ -1,5 +1,5 @@
-from flask import Blueprint, jsonify, request, current_app
-#I got this from Avi's code- what are these dependencies? any others that I need?
+from flask import Blueprint, jsonify, request
+
 
 main_bp = Blueprint('main', __name__)
 
