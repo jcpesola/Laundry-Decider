@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
-from ..database.database import db
-from ..database.models import LaundryStore, Address, Hours, WashAndFoldPrice, Reviews, DryCleaningPrice
+from app.database.database_connector import db
+from app.database.models import LaundryStore, Address, Hours, WashAndFoldPrice, Reviews, DryCleaningPrice
 
 
 main_bp = Blueprint('main', __name__)
@@ -13,7 +13,7 @@ def read_laundry_store_prices(store_id):
 
 #API 2: Get pricing for a specific laundry store
 
-@main_bp.route('/read_laundry_store_price', methods=['GET'])
+@main_bp.route('/laundry_stores/<int:id>/pricing', methods=['GET'])
 def read_laundry_store_price(store_id):
      #Query laundry store, wash_and_fold price, and dry_cleaning_price
      store = LaundryStore.query.get_or404(id)

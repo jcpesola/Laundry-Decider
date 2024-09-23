@@ -1,4 +1,4 @@
-from .database import db
+from .database_connector import db
 
 #Laundry Store Model
 class LaundryStore(db.Model):
@@ -27,7 +27,7 @@ class Address(db.Model):
     address_2 = db.Column(db.String(50), nullable=True)
     city = db.Column(db.String(50), nullable=False)
     state = db.Column(db.String(50), nullable=False)
-    zip_code = db.Column(db.integer, nullable=False)
+    zip_code = db.Column(db.Integer, nullable=False)
 
 #Hours Model
 class Hours(db.Model):
