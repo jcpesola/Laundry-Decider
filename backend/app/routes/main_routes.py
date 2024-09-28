@@ -6,17 +6,14 @@ from app.database.models import LaundryStore, Address, Hours, WashAndFoldPrice, 
 main_bp = Blueprint('main', __name__)
 
 
-#API 1: Get laundry stores within a radius of the user's location
-@main_bp.route('/read_laundry_store_price', methods=['GET'])
-def read_laundry_store_prices(store_id):
-    pass
+#Get pricing for a specific laundry store
 
-#API 2: Get pricing for a specific laundry store
-
-@main_bp.route('/laundry_stores/<int:id>/pricing', methods=['GET'])
+@main_bp.route('/read_laundry_store_price/<int:store_id>', methods=['GET'])
 def read_laundry_store_price(store_id):
+     #Placeholder
+     # return jsonify({"message": "List of laundry store pricing"}), 200
      #Query laundry store, wash_and_fold price, and dry_cleaning_price
-     store = LaundryStore.query.get_or404(id)
+     store = LaundryStore.query.get_or_404(store_id)
      wash_and_fold = store.wash_and_fold_price
      dry_cleaning = store.dry_cleaning_price
 
@@ -51,11 +48,36 @@ def read_laundry_store_price(store_id):
      }
 
      #Return pricing info as JSON
-     return jsonify(pricing_info)
+     return jsonify(pricing_info), 200
 
+#GET Request Placeholder
+@main_bp.route('/read_laundry_store/<int:store_id>', methods=['GET'])
+def read_laundry_store(store_id):
+    #placeholder
+    return jsonify({"message": "Laundry store"}), 200
 
-#API 3: Get list of laundry stores sorted by price
+#POST Request Placeholder
+@main_bp.route('/create_laundry_store', methods=['POST'])
+def create_laundry_store():
+     #Placeholder response for POST request
+     data = request.json
+     return jsonify({"message": "Placeholder: Laundry store creatred", "data": data}), 201
 
-@main_bp.route('/sort_laundry_stores_on_price', methods=['GET'])
-def sort_laundry_stores_on_price():
-     pass
+#PUT Request Placeholder
+@main_bp.route('/update_laundry_store/<int:store_id>', methods=['PUT'])
+def update_laundry_store(store_id):
+     #Placeholder response for PUT request
+     data = request.json
+     return jsonify({"message": f"Placeholder: Laundry store with ID {store_id} updated", "updated_data": data}), 200
+
+#PATCH Request Placeholder
+@main_bp.route('/partial_update_laundry_store/<int:store_id>', methods=['PATCH'])
+def partial_update_laundry_store(store_id):
+     data = request.json
+     return jsonify({'message': f"Placeholder: Partially updated laundry store with ID {store_id}", "patched_data": data}), 200
+
+#DELETE Request Placeholder
+@main_bp.route('/delete_laundry_store/<int:store_id>', methods=['DELETE'])
+def delete_laundry_store(store_id):
+     #Placeholder response for DELETE request
+     return jsonify({'message': f"Placeholder: Laundry store with ID {store_id} deleted"}), 204

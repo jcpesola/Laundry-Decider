@@ -2,7 +2,7 @@ from .database_connector import db
 
 #Laundry Store Model
 class LaundryStore(db.Model):
-    __tablename__ = 'laundry store'
+    __tablename__ = 'laundry_store'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
@@ -12,7 +12,7 @@ class LaundryStore(db.Model):
     free_delivery = db.Column(db.Boolean, default=False)
 
     #Relationships
-    address = db.relationship('Address', backref = 'laundry_store', uselist = False) #One to one
+    address = db.relationship('Address', backref = 'laundry_store', uselist = False, lazy='joined') #One to one
     hours = db.relationship('Hours', backref = 'laundry_store', uselist=False, lazy='joined') #One to One | Joined loading - loads same time as parent (laundry store)
     wash_and_fold_price = db.relationship('WashAndFoldPrice', backref='laundry_store', uselist=False) #One to one
     dry_cleaning_price = db.relationship('DryCleaningPrice', backref='laundry_store', uselist=False) #One to one
