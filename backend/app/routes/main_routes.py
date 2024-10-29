@@ -5,9 +5,20 @@ from app.database.models import LaundryStore, Address, Hours, WashAndFoldPrice, 
 
 main_bp = Blueprint('main', __name__)
 
+#GET Request - Search Laundry Store by Name
+@main_bp.route('/getLaundryStore', methods=['GET'])
+def getLaundryStore(): 
+   try:
+        data = request.get_json()
+        if not data or 'name' not in data:
+             return jsonify({"error": "A 'name' field is required in the JSON body"}), 400
+        name = data['name']
+   except Exception as e:
+        return jsonify({"error": "Invalid JSON input"}), 400
+   return jsonify({"name": name})
+
 
 #Get pricing for a specific laundry store
-
 @main_bp.route('/read_laundry_store_price/<int:store_id>', methods=['GET'])
 def read_laundry_store_price(store_id):
      #Placeholder
