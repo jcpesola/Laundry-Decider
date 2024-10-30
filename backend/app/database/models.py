@@ -16,7 +16,7 @@ class LaundryStore(db.Model):
     hours = db.relationship('Hours', backref = 'laundry_store', uselist=False, lazy='joined') #One to One | Joined loading - loads same time as parent (laundry store)
     wash_and_fold_price = db.relationship('WashAndFoldPrice', backref='laundry_store', uselist=False) #One to one
     dry_cleaning_price = db.relationship('DryCleaningPrice', backref='laundry_store', uselist=False) #One to one
-    reviews = db.relationship('Reviews', backref='laundry_store', lazy='dynamic') #One to many | lazy dynamic - returns query object rather then all results at once
+    reviews = db.relationship('Reviews', backref='laundry_store', lazy='joined') #One to many | Joined loading - loads same time as parent (laundry store)
 
 #Address Model
 class Address(db.Model):
@@ -47,9 +47,10 @@ class Reviews(db.Model):
     __tablename__ = 'reviews'
 
     laundry_id = db.Column(db.Integer, db.ForeignKey('laundry_store.id'), primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(50), nullable=True)
     date = db.Column(db.DateTime, nullable=False)
-    review = db.Column(db.String(100), nullable=False)
+    review = db.Column(db.String(100), nullable=True)
+    rating = db.Column(db.Integer, nullable=False)
 
 #Wash and Fold Price Model
 class WashAndFoldPrice(db.Model):
