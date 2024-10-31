@@ -55,6 +55,54 @@ def getLaundryStore():
         return jsonify({"error": "Invalid JSON input"}), 400
 #    return jsonify({"name": name})
 
+#GET Request - Search Laundry Store by ID
+@main_bp.route('/getLaundryStoreID', methods=['GET'])
+def getLaundryStoreID():
+     try:
+          data = request.get_json()
+          if not data or 'id' not in data:
+               return jsonify({"error": "An 'id' field is required in the JSON body"}), 400
+          ids = data['id']
+          stores = LaundryStore.query.filter(LaundryStore.id.in_(ids)).all()
+          
+          if not stores:
+               return jsonify({"error": "No stores found matching input"}), 404
+          
+          stores_info = []
+          for store in stores:
+               reviews = store.reviews
+               if reviews:
+                    avg_rating = sum(review.rating for review in reviews) / len(reviews)
+               else:
+                    avg_rating = None
+               
+               store_info = {
+                    "name": store.name,
+                    "id": store.id,
+                    "phone number": store.phone_number,
+                    "address": {
+                         "address_1": store.address.address_1,
+                         "address_2": store.address.address_2,
+                         "city": store.address.city,
+                         "state": store.address.state,
+                         "zip_code": store.address.zip_code
+                         } if store.address else None,
+                    "hours": {
+                         "mon": store.hours.mon,
+                         "tue": store.hours.tue,
+                         "wed": store.hours.wed,
+                         "thur": store.hours.thur,
+                         "fri": store.hours.fri,
+                         "sat": store.hours.sat,
+                         "sun": store.hours.sun
+                    } if store.hours else None,
+                    "avg_rating": avg_rating
+               }
+               stores_info.append(store_info)
+          return jsonify({"stores": stores_info}), 200
+     
+     except Exception as e:
+        return jsonify({"error": "Invalid JSON input"}), 400
 
 #Get pricing for a specific laundry store
 @main_bp.route('/read_laundry_store_price/<int:store_id>', methods=['GET'])
