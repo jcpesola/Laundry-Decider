@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from app.database.database_connector import db
 from app.database.models import LaundryStore, Address, Hours, WashAndFoldPrice, Reviews, DryCleaningPrice
-
+from sqlalchemy.orm import joinedload
 
 main_bp = Blueprint('main', __name__)
 
@@ -55,7 +55,7 @@ def getLaundryStore():
         return jsonify({"error": "Invalid JSON input"}), 400
 #    return jsonify({"name": name})
 
-#GET Request - Search Laundry Store by ID
+#GET Request - Search Laundry Store by ID --> returns pricing information
 @main_bp.route('/getLaundryStoreID', methods=['GET'])
 def getLaundryStoreID():
      try:
@@ -63,43 +63,47 @@ def getLaundryStoreID():
           if not data or 'id' not in data:
                return jsonify({"error": "An 'id' field is required in the JSON body"}), 400
           ids = data['id']
-          stores = LaundryStore.query.filter(LaundryStore.id.in_(ids)).all()
+          stores = LaundryStore.query.options(
+               joinedload(LaundryStore.wash_and_fold_price),
+               joinedload(LaundryStore.dry_cleaning_price)
+          ).filter(LaundryStore.id.in_(ids)).all()
           
           if not stores:
                return jsonify({"error": "No stores found matching input"}), 404
           
-          stores_info = []
+          pricing_info = []
           for store in stores:
-               reviews = store.reviews
-               if reviews:
-                    avg_rating = sum(review.rating for review in reviews) / len(reviews)
-               else:
-                    avg_rating = None
-               
                store_info = {
                     "name": store.name,
                     "id": store.id,
-                    "phone number": store.phone_number,
-                    "address": {
-                         "address_1": store.address.address_1,
-                         "address_2": store.address.address_2,
-                         "city": store.address.city,
-                         "state": store.address.state,
-                         "zip_code": store.address.zip_code
-                         } if store.address else None,
-                    "hours": {
-                         "mon": store.hours.mon,
-                         "tue": store.hours.tue,
-                         "wed": store.hours.wed,
-                         "thur": store.hours.thur,
-                         "fri": store.hours.fri,
-                         "sat": store.hours.sat,
-                         "sun": store.hours.sun
-                    } if store.hours else None,
-                    "avg_rating": avg_rating
+                     "wash_and_fold": {
+                         "min_pirce": store.wash_and_fold_price.min_price,
+                         "min_pounds": store.wash_and_fold_price.min_pounds,
+                         "pricer_per_pound": store.wash_and_fold_price.price_per_pound
+                    } if store.wash_and_fold_price else None,
+                    "dry_cleaning": {
+                         "dress": store.dry_cleaning_price.dress,
+                         "sweater": store.dry_cleaning_price.sweater,
+                         "skirt": store.dry_cleaning_price.skirt,
+                         "shorts": store.dry_cleaning_price.shorts,
+                         "outer_jacket": store.dry_cleaning_price.outer_jacket,
+                         "coat": store.dry_cleaning_price.coat,
+                         "jump_suit": store.dry_cleaning_price.jump_suit,
+                         "launder_shirt": store.dry_cleaning_price.launder_shirt,
+                         "dry_clean_shirt": store.dry_cleaning_price.dry_clean_shirt,
+                         "blouse": store.dry_cleaning_price.blouse,
+                         "pants": store.dry_cleaning_price.pants,
+                         "suit_jacket": store.dry_cleaning_price.suit_jacket,
+                         "two_piece_suit": store.dry_cleaning_price.two_piece_suit,
+                         "robe": store.dry_cleaning_price.robe,
+                         "scarf": store.dry_cleaning_price.scarf,
+                         "tie": store.dry_cleaning_price.tie,
+                         "tuxedo": store.dry_cleaning_price.tuxedo,
+                         "three_piece_suit": store.dry_cleaning_price.three_piece_suit
+                    } if store.dry_cleaning_price else None
                }
-               stores_info.append(store_info)
-          return jsonify({"stores": stores_info}), 200
+               pricing_info.append(store_info)
+          return jsonify({"stores": pricing_info}), 200
      
      except Exception as e:
         return jsonify({"error": "Invalid JSON input"}), 400
