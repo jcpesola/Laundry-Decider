@@ -2,8 +2,48 @@ from flask import Blueprint, jsonify, request
 from app.database.database_connector import db
 from app.database.models import LaundryStore, Address, Hours, WashAndFoldPrice, Reviews, DryCleaningPrice
 from sqlalchemy.orm import joinedload
+import requests, os
 
 main_bp = Blueprint('main', __name__)
+
+def get_coordinates_from_address(address):
+     #use Google Geocoding API to take address --> latitude, longitude
+     pass
+
+def get_nearby_laundry_stores(latitude, longitude, radius):
+     #use Google Places API to take lat, long, and radius --> nearby laundry stores (return id's)
+     maps_api = os.getenv('GOOGLE_MAPS_API_KEY')
+
+#GET Request - Search laundry store by location (lat/long. or address)
+@main_bp.route('/nearby_laundry_stores', methods=['GET'])
+def nearby_laundry_stores():
+     try:
+          latitude = request.args.get('latitude')
+          longitude = request.args.get('longitude')
+          address = request.args.get('address')
+          radius = request.args.get('radius')
+
+          if not radius or radius <= 0:
+               return jsonify({'error': 'Radius must be a positive number'}), 400
+          if latitude and longitude:
+               latitude, longitude = float(latitude), float(longitude)
+          elif address:
+               latitude, longitude = get_coordinates_from_address(address)
+               if not latitude or not longitude:
+                    return jsonify({'error': 'Data not retrieved from Google Places'})
+          else:
+               return jsonify({'error': 'Either lat. & long. or address must be provided'})
+          
+          places_data = get_nearby_laundry_stores(latitude, longitude, radius)
+          if not places_data:
+               return jsonify({'error': 'No data recieved from Google Places0'})
+          
+          nearby_stores = [{"id": place.get("place_id")} for place in places_data.get("results", [])]
+
+          return jsonify({'store_ids': nearby_stores}), 200
+     
+     except (ValueError, TypeError):
+          return jsonify({'error': 'Invalid input for latitude, longitude, radius or address'}), 400
 
 #GET Request - Search Laundry Store by Name
 @main_bp.route('/getLaundryStore', methods=['GET'])
@@ -111,9 +151,6 @@ def getLaundryStoreID():
 #Get pricing for a specific laundry store
 @main_bp.route('/read_laundry_store_price/<int:store_id>', methods=['GET'])
 def read_laundry_store_price(store_id):
-     #Placeholder
-     # return jsonify({"message": "List of laundry store pricing"}), 200
-     #Query laundry store, wash_and_fold price, and dry_cleaning_price
      store = LaundryStore.query.get_or_404(store_id)
      wash_and_fold = store.wash_and_fold_price
      dry_cleaning = store.dry_cleaning_price

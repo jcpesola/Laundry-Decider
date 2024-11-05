@@ -10,6 +10,7 @@ class LaundryStore(db.Model):
     last_updated = db.Column(db.Date, nullable=False)
     email = db.Column(db.String(50), nullable=True)
     free_delivery = db.Column(db.Boolean, default=False)
+    google_id = db.Column(db.String(100), unique=True, nullable=True)
 
     #Relationships
     address = db.relationship('Address', backref = 'laundry_store', uselist = False, lazy='joined') #One to one
