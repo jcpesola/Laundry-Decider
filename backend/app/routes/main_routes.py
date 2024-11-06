@@ -5,24 +5,50 @@ from sqlalchemy.orm import joinedload
 import requests, os
 
 main_bp = Blueprint('main', __name__)
+maps_api = os.getenv('GOOGLE_MAPS_API_KEY')
 
 def get_coordinates_from_address(address):
      #use Google Geocoding API to take address --> latitude, longitude
-     pass
+     url = "https://maps.googleapis.com/maps/api/geocode/json"
+     params = {
+          "address": address,
+          "key": maps_api
+     }
+     response = requests.get(url, params=params)
+     if response.status_code == 200:
+          results = response.json().get("results")
+          if results:
+               location = results[0]["geometry"]["location"]
+               return location["lat"], location["lng"]
+          return None, None
 
 def get_nearby_laundry_stores(latitude, longitude, radius):
      #use Google Places API to take lat, long, and radius --> nearby laundry stores (return id's)
-     maps_api = os.getenv('GOOGLE_MAPS_API_KEY')
+     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
+     params = {
+          "location": f"{latitude}, {longitude}",
+          "radius": radius * 1609.34, #multiply to convert miles to meters
+          "type": "laundry",
+          "key": maps_api
+     }
+     response = requests.get(url, params=params)
+     return response.json() if response.status_code == 200 else None
 
 #GET Request - Search laundry store by location (lat/long. or address)
 @main_bp.route('/nearby_laundry_stores', methods=['GET'])
 def nearby_laundry_stores():
      try:
-          latitude = request.args.get('latitude')
-          longitude = request.args.get('longitude')
-          address = request.args.get('address')
-          radius = request.args.get('radius')
+          data = request.get_json()
+          if not data:
+               return jsonify({'error': 'Request body must be JSON'}), 400
+          
+          data = data.get("data")
+          latitude = data.get('latitude')
+          longitude = data.get('longitude')
+          address = data.get('address')
+          radius = data.get('radius')
 
+          
           if not radius or radius <= 0:
                return jsonify({'error': 'Radius must be a positive number'}), 400
           if latitude and longitude:
@@ -36,7 +62,7 @@ def nearby_laundry_stores():
           
           places_data = get_nearby_laundry_stores(latitude, longitude, radius)
           if not places_data:
-               return jsonify({'error': 'No data recieved from Google Places0'})
+               return jsonify({'error': 'No data recieved from Google Places'})
           
           nearby_stores = [{"id": place.get("place_id")} for place in places_data.get("results", [])]
 
